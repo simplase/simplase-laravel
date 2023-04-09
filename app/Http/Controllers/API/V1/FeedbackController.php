@@ -13,38 +13,31 @@ class FeedbackController extends Controller
      */
     public function index()
     {
-        //
+        return Feedback::orderBy('id', 'desc')->paginate(10);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'name' => 'required',
+            'email' => 'email',
+            'feedback' => 'required',
+        ]);
+
+        $feedback = Feedback::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'feedback' => $request->feedback,
+            'phone' => $request->phone,
+        ]);
+
+        return response($feedback, 200)->header('Content-Type', 'text/plain');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Feedback $feedback)
+    public function destroy($id)
     {
-        //
-    }
+        Feedback::where('id', $id)->delete();
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Feedback $feedback)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Feedback $feedback)
-    {
-        //
+        return response('OK', 200)->header('Content-Type', 'text/plain');
     }
 }
