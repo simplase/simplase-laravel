@@ -11,9 +11,15 @@ class FeedbackController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        return Feedback::orderBy('id', 'desc')->paginate(10);
+        if ($request->search) {
+            return Feedback::where('email', 'LIKE', "%{$request->search}%")
+                ->orderBy('id', 'desc')
+                ->paginate(10);
+        } else {
+            return Feedback::orderBy('id', 'desc')->paginate(10);
+        }
     }
 
     public function store(Request $request)
