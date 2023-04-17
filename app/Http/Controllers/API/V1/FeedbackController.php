@@ -11,12 +11,12 @@ class FeedbackController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+    public function index(Request $request, $paginate = 10)
     {
         if ($request->search) {
             return Feedback::where('email', 'LIKE', "%{$request->search}%")
                 ->orderBy('id', 'desc')
-                ->paginate(10);
+                ->paginate($paginate);
         } else {
             return Feedback::orderBy('id', 'desc')->paginate(10);
         }
@@ -26,7 +26,7 @@ class FeedbackController extends Controller
     {
         $request->validate([
             'name' => 'required',
-            'email' => 'email',
+            'email' => 'required|email',
             'feedback' => 'required',
         ]);
 

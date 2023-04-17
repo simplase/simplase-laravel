@@ -3,6 +3,8 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\V1\FeedbackController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\StoreUserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,9 +21,26 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::group([
+
+    'middleware' => 'api',
+    'prefix' => 'auth'
+
+], function ($router) {
+    Route::post('login', [AuthController::class, 'login']);
+    Route::post('logout', [AuthController::class, 'logout']);
+    Route::post('refresh', [AuthController::class, 'refresh']);
+    Route::post('me', [AuthController::class, 'me']);
+});
+
 Route::prefix('V1')->group(function () {
-    Route::get('/feedback', [FeedbackController::class, 'index']);
-    Route::post('/feedback', [FeedbackController::class, 'store']);
-    Route::delete('/feedback/{id}', [FeedbackController::class, 'destroy']);
+    Route::prefix('feedback')->group(function (){
+        Route::get('/', [FeedbackController::class, 'index']);
+        Route::post('/', [FeedbackController::class, 'store']);
+        Route::delete('/{id}', [FeedbackController::class, 'destroy'])->middleware('jwt.auth');
+    });
+
+    Route::post('create/user', StoreUserController::class,);
+
 });
 
